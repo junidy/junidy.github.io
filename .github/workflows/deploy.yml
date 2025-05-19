@@ -11,14 +11,18 @@ on:
 permissions:
   contents: read
   pages: write # Required to deploy to GitHub Pages
-  id-token: write # Required for OIDC token if you were using advanced deployment
+  id-token: write # Required for OIDC token
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    # Add this environment section:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }} # This will output the deployed URL
     steps:
       - name: Checkout 🛎️
-        uses: actions/checkout@v4 # Checks out your repository code
+        uses: actions/checkout@v4
 
       - name: Set up Node.js ⚙️
         uses: actions/setup-node@v4
@@ -31,7 +35,6 @@ jobs:
 
       - name: Build project 🔨
         run: npm run build # This runs the build script from your package.json
-                          # It should output to the 'dist' folder by default
 
       - name: Setup Pages 📄
         uses: actions/configure-pages@v4
@@ -42,5 +45,5 @@ jobs:
           path: './dist' # Vite builds to the 'dist' folder by default
 
       - name: Deploy to GitHub Pages 🚀
-        id: deployment
+        id: deployment # id is important for the environment.url above
         uses: actions/deploy-pages@v4
